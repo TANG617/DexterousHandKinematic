@@ -10,7 +10,7 @@ q1=0
 q2=0
 l1=20
 l2=20
-l3=20
+l3=30
 l4=15
 cy = 0
 h = 30
@@ -46,9 +46,10 @@ def calculate_d12(d, k, l1):
 def calculate_d3(d, h,q1,q2,alpha,l3,l4, p,cy):
     P12_x = torch.tensor(h*math.sin(q2)*math.sin(q1) - l4*math.sin(q2)*math.sin(q1-alpha))
     P12_y = torch.tensor(h*math.cos(q1) - l4*math.cos(q1-alpha) - cy)
-    P12_z = torch.tensor(h*math.cos(q2)*math.cos(q1) - l4*math.sin(q2)*math.sin(q1 - alpha) + p)
+    P12_z = torch.tensor(h*math.cos(q2)*math.sin(q1) - l4*math.cos(q2)*math.sin(q1 - alpha) + p)
     A1 = P12_z
     B1 = P12_x**2 + P12_y**2 + P12_z**2 - l3**2
+    print(P12_x,P12_y,P12_z)
     print(A1,B1)
     d[2][2] = A1 - torch.sqrt(A1**2 - B1)
     print(d)
