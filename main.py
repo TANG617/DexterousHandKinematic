@@ -18,7 +18,6 @@ h = 30
 alpha = 0
 
 def create_rotation_matrix(q1, q2):
-    # 创建旋转矩阵 R
     R = torch.tensor([
         [math.cos(q2),      math.sin(q2)*math.sin(q1),    math.sin(q2)*math.cos(q1)],
         [0,                 math.cos(q1),                  -math.sin(q1)],
@@ -37,7 +36,6 @@ def create_argument(ax,ay,bx,by,p,R):
 
 
 def calculate_d12(d, k, l1):
-    # d = torch.zeros(3,3)
     k_norm_squared = torch.sqrt(torch.sum(k**2, dim=1))
     d[0][2] = k[0][2] - torch.sqrt(l1**2 + k[0][2]**2 - k_norm_squared[0]**2)
     d[1][2] = k[1][2] - torch.sqrt(l1**2 + k[1][2]**2 - k_norm_squared[1]**2)
@@ -49,21 +47,18 @@ def calculate_d3(d, h,q1,q2,alpha,l3,l4, p,cy):
     P12_z = torch.tensor(h*math.cos(q2)*math.sin(q1) - l4*math.cos(q2)*math.sin(q1 - alpha) + p)
     A1 = P12_z
     B1 = P12_x**2 + P12_y**2 + P12_z**2 - l3**2
-    print(P12_x,P12_y,P12_z)
-    print(A1,B1)
     d[2][2] = A1 - torch.sqrt(A1**2 - B1)
-    print(d)
+    return d
 
 def main():
     R = create_rotation_matrix(q1=q1, q2=q2)
-    print(R)
     k = create_argument(ax=ax,ay=ay,bx=bx,by=by,p=p, R=R)
-    print(k)
     d = torch.zeros(3,3,dtype=torch.float32)
     d = calculate_d12(d, k, l1)
-    print(d)
     d = calculate_d3(d, h,q1,q2,alpha,l3,l4, p,cy)
-    print(d)
+    print("d1:",d[0][2].item())
+    print("d2:",d[1][2].item())
+    print("d3:",d[2][2].item())
 if __name__ == "__main__":
     main()
 
