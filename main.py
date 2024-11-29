@@ -17,33 +17,36 @@ cy = 0
 h = 30
 alpha = 0
 
-r1 = 15
-r2 = 25
+r1 = 13
+r2 = 26
 r3 = 7
-r4 = 28
+r4 = 28.5
 #
-#theta1 = 135/360*math.pi*2
+theta1 = 135/360*math.pi*2
 theta2 = 25.5/360*math.pi*2
 theta3 = 121.8/360*math.pi*2
 theta4 = 68/360*math.pi*2
 
 u1 = 28
-u2 = 7
+u2 = 6.5
 u3 = 7
 u4 = 31
 
-gamma1 = 60/360*math.pi*2
-# gamma2 = 275/360*math.pi*2
-# gamma3 = 23/360*math.pi*2
-# gamma3 = 180/360*math.pi*2
-# gamma4 = 34/360*math.pi*2
+gamma1 = 42/360*math.pi*2
+gamma2 = 275/360*math.pi*2
+gamma3 = 180/360*math.pi*2
+gamma4 = 23/360*math.pi*2
 
 beta1 = 45/360*math.pi*2
 beta2 = 43/360*math.pi*2
-beta3 = 41/360*math.pi*2
+beta3 = 50/360*math.pi*2
 
 class DexterousHandKinematics:
-    def __init__(self, ax, ay, bx, by, p, q1, q2, l1, l2, l3, l4, cy, h, alpha, r1, r2, r3, r4, theta2, theta3, theta4, u1, u2, u3, u4, gamma1, beta1, beta2, beta3):
+    def __init__(self, ax, ay, bx, by, p, q1, q2, l1, l2, l3, l4, cy, h, alpha, r1, r2, r3, r4, theta3, theta4, u1, u2, u3, u4, gamma1, beta1, beta2, beta3):
+        self.beta1 = beta1
+        self.beta2 = beta2
+        self.beta3 = beta3
+        
         self.ax = ax
         self.ay = ay
         self.bx = bx
@@ -62,7 +65,6 @@ class DexterousHandKinematics:
         self.r2 = r2
         self.r3 = r3
         self.r4 = r4
-        self.theta2 = theta2
         self.theta3 = theta3
         self.theta4 = theta4
 
@@ -70,13 +72,12 @@ class DexterousHandKinematics:
         self.u2 = u2
         self.u3 = u3
         self.u4 = u4
-        self.gamma1 = gamma1
-        # self.gamma3 = gamma3
-        # self.gamma4 = gamma4
 
-        self.beta1 = beta1
-        self.beta2 = beta2
-        self.beta3 = beta3
+        self.gamma1 = self.theta3 - self.beta2 + self.beta3 - math.pi/2
+        print("gamma1: ",self.gamma1, "ref:", 42/360*math.pi*2)
+        # self.gamma1 = gamma1
+
+
 
         self.create_rotation_matrix()
         self.create_argument()
@@ -129,13 +130,19 @@ class DexterousHandKinematics:
         B3 = 2*self.u1*self.u2*math.cos(self.gamma1) + 2*self.u2*self.u3
         C3 = self.u4**2 - self.u1**2 - self.u2**2 - self.u3**2 - 2*self.u1*self.u3*math.cos(self.gamma1)
         print("A3",A3,"B3",B3,"C3",C3)
+        print(C3/math.sqrt(A3**2 + B3**2))
+        print(B3/A3)
         self.gamma2 = math.asin(C3/math.sqrt(A3**2 + B3**2)) - math.atan(B3/A3)
-        print("gamma2: ",self.gamma2 + math.pi *2, "ref:", 275/360*math.pi*2)
+        print("gamma2: ",self.gamma2 + math.pi*2, "ref:", 275/360*math.pi*2)
 
 def main():
-    dhk = DexterousHandKinematics(ax,ay,bx,by,p,q1,q2,l1,l2,l3,l4,cy,h,alpha,r1,r2,r3,r4,theta2,theta3,theta4,u1,u2,u3,u4,gamma1,beta1,beta2,beta3)
-    print(dhk.d)
-
+    dhk = DexterousHandKinematics(ax,ay,bx,by,p,q1,q2,l1,l2,l3,l4,cy,h,alpha,r1,r2,r3,r4,theta3,theta4,u1,u2,u3,u4,gamma1,beta1,beta2,beta3)
+    # print(dhk.d)
+    # print("DATA_VALIDATION")
+    # print(r1*math.cos(theta1) + r2*math.cos(theta2) + r3*math.cos(theta3) - r4*math.cos(theta4))
+    # print(r1*math.sin(theta1) + r2*math.sin(theta2) + r3*math.sin(theta3) - r4*math.sin(theta4))
+    # print(u1*math.cos(gamma1) + u2*math.cos(gamma2) - u3*math.cos(gamma3) - u4*math.cos(gamma4))
+    # print(u1*math.sin(gamma1) + u2*math.sin(gamma2) - u3*math.sin(gamma3) - u4*math.sin(gamma4))
 if __name__ == "__main__":
     start_time = time.time()
     main()
