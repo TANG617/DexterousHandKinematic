@@ -74,7 +74,7 @@ class DexterousHandKinematics:
         self.u4 = u4
 
         self.gamma1 = self.theta3 - self.beta2 + self.beta3 - math.pi/2
-        print("gamma1: ",self.gamma1, "ref:", 42/360*math.pi*2)
+        # print("gamma1: ",self.gamma1, "ref:", 42/360*math.pi*2)
         # self.gamma1 = gamma1
 
 
@@ -84,7 +84,8 @@ class DexterousHandKinematics:
         self.calculate_gamma2()
         # self.gamma1 = self.theta3 - self.beta2 + self.beta3
         self.calculate_theta1() 
-        # alpha = math.pi - self.beta1
+        alpha = math.pi - self.beta1 - self.theta1
+        print("alpha: ",alpha, "ref:", 0/360*math.pi*2)
         self.calculate_d12()
         self.calculate_d3()
 
@@ -122,22 +123,22 @@ class DexterousHandKinematics:
         A2 = 2*self.r1*(self.r3*math.sin(self.theta3) - self.r4 * math.sin(self.theta4))
         B2 = 2*self.r1*(self.r3*math.cos(self.theta3) - self.r4 * math.cos(self.theta4))
         C2 = self.r2**2 - self.r1**2-self.r3**2 -self.r4**2 + 2*self.r3*self.r4*math.cos(self.theta3-self.theta4)
-        self.theta1 = math.asin(C2/math.sqrt(A2**2 + B2**2)) - math.atan(B2/A2)
-        print("theta1: ",self.theta1 + math.pi, "ref:", 135/360*math.pi*2)
+        self.theta1 = math.asin(C2/math.sqrt(A2**2 + B2**2)) - math.atan(B2/A2) + math.pi #unkown
+        print("theta1: ",self.theta1 , "ref:", 135/360*math.pi*2)
 
     def calculate_gamma2(self):
         A3 = 2*self.u1*self.u2*math.sin(self.gamma1)
         B3 = 2*self.u1*self.u2*math.cos(self.gamma1) + 2*self.u2*self.u3
         C3 = self.u4**2 - self.u1**2 - self.u2**2 - self.u3**2 - 2*self.u1*self.u3*math.cos(self.gamma1)
-        print("A3",A3,"B3",B3,"C3",C3)
-        print(C3/math.sqrt(A3**2 + B3**2))
-        print(B3/A3)
+        # print("A3",A3,"B3",B3,"C3",C3)
+        # print(C3/math.sqrt(A3**2 + B3**2))
+        # print(B3/A3)
         self.gamma2 = math.asin(C3/math.sqrt(A3**2 + B3**2)) - math.atan(B3/A3)
         print("gamma2: ",self.gamma2 + math.pi*2, "ref:", 275/360*math.pi*2)
 
 def main():
     dhk = DexterousHandKinematics(ax,ay,bx,by,p,q1,q2,l1,l2,l3,l4,cy,h,alpha,r1,r2,r3,r4,theta3,theta4,u1,u2,u3,u4,gamma1,beta1,beta2,beta3)
-    # print(dhk.d)
+    print(dhk.d)
     # print("DATA_VALIDATION")
     # print(r1*math.cos(theta1) + r2*math.cos(theta2) + r3*math.cos(theta3) - r4*math.cos(theta4))
     # print(r1*math.sin(theta1) + r2*math.sin(theta2) + r3*math.sin(theta3) - r4*math.sin(theta4))
