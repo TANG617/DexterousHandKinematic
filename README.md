@@ -1,23 +1,34 @@
-# A Implementation of ILDA dexterous hand kinematics
+# A Reproduce of ILDA dexterous hand kinematics
 Paper Link: [ILDA dexterous hand kinematics](https://www.nature.com/articles/s41467-021-27261-0)
 
 ## Core
 ![alt text](images/core.png)
 Based on the core structure of ILDA dexterous hand, and the paper(with its important supplementary materials), I implement the kinematics in python with pytorch.
 
-// ... existing content ...
+
+Some extra features are also implemented:
+- Forward kinematics for the dip position in global frame
+- Scan to get the reachable workspace
+
+## Some unknown issues
+These issues might be caused by my poor math skills or the shallow understanding of the paper.
+I just fixed them engineeringly by luck. And I am still searching for the root cause.
 
 ### 1
 ![alt text](images/issue1.png)
 
-According to the geometrical relationships, $\alpha + \theta_1 + \beta_1 = \pi$
-so, if $\beta_1 = 2\pi/9$, then $\alpha + \theta_1 = \pi - 2\pi/9 = 7\pi/9$
+According to the geometrical relationships, $
+\alpha + \theta_1 + \beta_1 = \pi$
+
+so, if $\beta_1 = 2\pi/9$, 
+
+then $\alpha + \theta_1 = \pi - 2\pi/9 = 7\pi/9$
 
 ### 2
 ![alt text](images/issue2.png)
 I don't figure out how the equation is derived. But I do find the equation is wrong.
-The correct one shoule be:
 
+The correct one shoule be:
 $\theta_2 = \theta_3 - \beta_2 + \beta_3 -\pi/2$
 
 ### 3
@@ -32,6 +43,7 @@ Anthor equation about $\vec{u}$ happens the same problem.
 ### 4
 In the code, the $\theta_1$ is calculated as:
 ```python
-self.theta1 = math.asin(C2/math.sqrt(A2**2 + B2**2)) - math.atan(B2/A2) + math.pi 
-```
-in which an extra $\pi$ is added. I did't figure out why, but it works.
+ self.theta1 = math.asin(C2/math.sqrt(A2**2 + B2**2)) - math.atan(B2/A2) + math.pi 
+ ```
+ in which an extra $\pi$ is added. I did't figure out why, but it works.
+
