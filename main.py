@@ -2,6 +2,9 @@ import torch
 import math
 import time
 
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
 ax=10
 ay=20
 bx=10
@@ -152,12 +155,38 @@ if __name__ == "__main__":
     dhk = DexterousHandKinematics(ax,ay,bx,by,p,l1,l2,l3,l4,cy,h,r1,r2,r3,r4,u1,u2,u3,u4,beta1,beta2,beta3,theta4)
     
 
-    for i in range(30):
-        for j in range(30):
-            for k in range(30):
-                dhk.update_kinematics(6/180*math.pi*i ,6/180*math.pi *j ,6/180*math.pi*k)
-                print(dhk.d)
-                print(dhk.Pp_dip)
+# 创建存储点坐标的列表
+    x_points = []
+    y_points = []
+    z_points = []
+
+    for i in range(44):
+        for j in range(15):
+            for k in range(80):
+                dhk.update_kinematics(1/180*math.pi*i, 1/180*math.pi*j, 1/180*math.pi*k)
+                # 将点坐标添加到列表中
+                x_points.append(dhk.Pp_dip[0][0].item())
+                y_points.append(dhk.Pp_dip[0][1].item())
+                z_points.append(dhk.Pp_dip[0][2].item())
+
+
+    # 创建3D图
+    fig = plt.figure(figsize=(10, 10))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # 绘制散点图
+    ax.scatter(x_points, y_points, z_points, c='b', marker='o', s=1)
+    
+    # 设置坐标轴标签
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    
+    # 设置标题
+    plt.title('Dexterous Hand End-Point Positions')
+    
+    # 显示图形
+    plt.show()
 
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
