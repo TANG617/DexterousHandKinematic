@@ -17,8 +17,9 @@ I just fixed them engineeringly by luck. And I am still searching for the root c
 ### 1
 ![alt text](images/issue1.png)
 
-According to the geometrical relationships, $
-\alpha + \theta_1 + \beta_1 = \pi$
+According to the geometrical relationships, 
+
+$\alpha + \theta_1 + \beta_1 = \pi$
 
 so, if $\beta_1 = 2\pi/9$, 
 
