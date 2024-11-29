@@ -67,40 +67,7 @@ class DexterousHandKinematics:
         self.u4 = u4
         self.theta4 = theta4
 
-    def forward_kinematics(self,q1,q2,q3):
-        self.inverse_kinematics(q1,q2,q3)
-        
-        DY = u1*math.cos(gamma1)
-        DZ = u1*math.sin(gamma1)
-        Ppip_dipSS = torch.tensor([0,DY,DZ],dtype=torch.float32)
-        delta =  (self.gamma1 - self.beta3 + math.pi - theta3)
-        print("delta: ",delta)
-        self.r = torch.tensor([
-            [1,0,0],
-            [0,math.cos(delta),math.sin(delta)],
-            [0,-math.sin(delta),math.cos(delta)]
-        ], dtype=torch.float32)
-        Ppip_dipS = self.r @ Ppip_dipSS
-        print("Ppip_dipSS: ",Ppip_dipSS)
-        
-        
-        
-
-
-        CV = r1*math.cos(theta1) + r2*math.cos(theta2) + r3*math.cos(theta3)
-        CW = r1*math.sin(theta1) + r2*math.sin(theta2) + r3*math.sin(theta3)
-        Pp_pipS = torch.tensor([0,CV,CW],dtype=torch.float32) + torch.tensor([0,h,0],dtype=torch.float32);
-        Pp_dipS = Pp_pipS + Ppip_dipS
-        print("Ppip_dipS: ",Ppip_dipS)
-        print("Pp_pipS: ",Pp_pipS)
-        print("Pp_dipS: ",Pp_dipS)
-        Pp_dip = self.R @ Pp_dipS + torch.tensor([[0,0,self.p]],dtype=torch.float32)
-        print(Pp_dip)
-        
-
-
-
-    def inverse_kinematics(self,q1,q2,q3):
+    def update_kinematics(self,q1,q2,q3):
 
         self.q1 = q1
         self.q2 = q2
@@ -114,7 +81,7 @@ class DexterousHandKinematics:
         
         self.calculate_d12()
         self.calculate_d3()
-
+        self.calculate_dip_position()
 
     def create_rotation_matrix(self):
         self.R = torch.tensor([
@@ -150,33 +117,48 @@ class DexterousHandKinematics:
         A2 = 2*self.r1*(self.r3*math.sin(self.theta3) - self.r4 * math.sin(self.theta4))
         B2 = 2*self.r1*(self.r3*math.cos(self.theta3) - self.r4 * math.cos(self.theta4))
         C2 = self.r2**2 - self.r1**2-self.r3**2 -self.r4**2 + 2*self.r3*self.r4*math.cos(self.theta3-self.theta4)
-        self.theta1 = math.asin(C2/math.sqrt(A2**2 + B2**2)) - math.atan(B2/A2) + math.pi #unkown
-        # print("theta1: ",self.theta1 , "ref:", 135/360*math.pi*2)
+        self.theta1 = math.asin(C2/math.sqrt(A2**2 + B2**2)) - math.atan(B2/A2) + math.pi 
+        #unkown why there is a pi bias, but it works
 
     def calculate_gamma2(self):
         self.gamma1 = self.theta3 - self.beta2 + self.beta3 - math.pi/2
         A3 = 2*self.u1*self.u2*math.sin(self.gamma1)
         B3 = 2*self.u1*self.u2*math.cos(self.gamma1) + 2*self.u2*self.u3
         C3 = self.u4**2 - self.u1**2 - self.u2**2 - self.u3**2 - 2*self.u1*self.u3*math.cos(self.gamma1)
-        # print("A3",A3,"B3",B3,"C3",C3)
-        # print(C3/math.sqrt(A3**2 + B3**2))
-        # print(B3/A3)
         self.gamma2 = math.asin(C3/math.sqrt(A3**2 + B3**2)) - math.atan(B3/A3)
-        # print("gamma2: ",self.gamma2 + math.pi*2, "ref:", 275/360*math.pi*2)
 
-def main():
-    dhk = DexterousHandKinematics(ax,ay,bx,by,p,l1,l2,l3,l4,cy,h,r1,r2,r3,r4,u1,u2,u3,u4,beta1,beta2,beta3,theta4)
-    dhk.inverse_kinematics(q1,q2,q3=theta3)
-    dhk.forward_kinematics(q1,q2,q3=theta3)
-    print(dhk.d)
-    # print("DATA_VALIDATION")
-    # print(r1*math.cos(theta1) + r2*math.cos(theta2) + r3*math.cos(theta3) - r4*math.cos(theta4))
-    # print(r1*math.sin(theta1) + r2*math.sin(theta2) + r3*math.sin(theta3) - r4*math.sin(theta4))
-    # print(u1*math.cos(gamma1) + u2*math.cos(gamma2) - u3*math.cos(gamma3) - u4*math.cos(gamma4))
-    # print(u1*math.sin(gamma1) + u2*math.sin(gamma2) - u3*math.sin(gamma3) - u4*math.sin(gamma4))
+    
+    def calculate_dip_position(self):
+        DY = u1*math.cos(gamma1)
+        DZ = u1*math.sin(gamma1)
+        Ppip_dipSS = torch.tensor([0,DY,DZ],dtype=torch.float32)
+        delta =  (self.gamma1 - self.beta3 + math.pi - theta3)
+        self.r = torch.tensor([
+            [1,0,0],
+            [0,math.cos(delta),math.sin(delta)],
+            [0,-math.sin(delta),math.cos(delta)]
+        ], dtype=torch.float32)
+        Ppip_dipS = self.r @ Ppip_dipSS
+        CV = r1*math.cos(theta1) + r2*math.cos(theta2) + r3*math.cos(theta3)
+        CW = r1*math.sin(theta1) + r2*math.sin(theta2) + r3*math.sin(theta3)
+        Pp_pipS = torch.tensor([0,CV,CW],dtype=torch.float32) + torch.tensor([0,h,0],dtype=torch.float32);
+        Pp_dipS = Pp_pipS + Ppip_dipS
+        self.Pp_dip = self.R @ Pp_dipS + torch.tensor([[0,0,self.p]],dtype=torch.float32)
+
+
 if __name__ == "__main__":
     start_time = time.time()
-    main()
+
+    dhk = DexterousHandKinematics(ax,ay,bx,by,p,l1,l2,l3,l4,cy,h,r1,r2,r3,r4,u1,u2,u3,u4,beta1,beta2,beta3,theta4)
+    
+
+    for i in range(30):
+        for j in range(30):
+            for k in range(30):
+                dhk.update_kinematics(6/180*math.pi*i ,6/180*math.pi *j ,6/180*math.pi*k)
+                print(dhk.d)
+                print(dhk.Pp_dip)
+
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
 
