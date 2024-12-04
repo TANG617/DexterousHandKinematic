@@ -1,4 +1,8 @@
 # A Reproduce of ILDA dexterous hand kinematics
+## Branch
+- 'main': the implementation of the paper with python
+- 'simulation': the simulation of the hand with Isaac Sim
+
 Paper Link: [ILDA dexterous hand kinematics](https://www.nature.com/articles/s41467-021-27261-0)
 
 ## Core
