@@ -19,35 +19,14 @@ int main() {
     float beta1 = 45.0/360.0 * 2*PI;
     float beta2 = 43.0/360.0 * 2*PI;
     float beta3 = 50.0/360.0 * 2*PI;
+    float theta2 = 25.5/360.0 * 2*PI;
     float theta4 = 68.0/360.0 * 2*PI;
 
     DexterousHand hand;
     init_dexterous_hand(&hand, ax, ay, bx, by, p, l1, l2, l3, l4, cy, h,
                         r1, r2, r3, r4, u1, u2, u3, u4,
-                        beta1, beta2, beta3, theta4);
+                        beta1, beta2, beta3, theta2, theta4);
 
-    // Calculate number of points
-    // int num_points = 44 * 15 * 80;
-    // float* x_points = (float*)malloc(num_points * sizeof(float));
-    // float* y_points = (float*)malloc(num_points * sizeof(float));
-    // float* z_points = (float*)malloc(num_points * sizeof(float));
-    
-    // int point_idx = 0;
-    // for(int i = 0; i < 44; i++) {
-    //     for(int j = 0; j < 15; j++) {
-    //         for(int k = 0; k < 80; k++) {
-    //             update_kinematics(&hand, 
-    //                             1.0/180.0 * PI * i,
-    //                             1.0/180.0 * PI * j,
-    //                             1.0/180.0 * PI * k);
-                
-    //             x_points[point_idx] = hand.Pp_dip[0];
-    //             y_points[point_idx] = hand.Pp_dip[1];
-    //             z_points[point_idx] = hand.Pp_dip[2];
-    //             point_idx++;
-    //         }
-    //     }
-    // }
 
     update_kinematics(&hand,0.0f,0.0f,0.0f);
 
@@ -64,6 +43,9 @@ int main() {
     // free(x_points);
     // free(y_points);
     // free(z_points);
+
+    printf("dip position: [%.2f, %.2f, %.2f]\n", 
+           hand.Pp_dip[0], hand.Pp_dip[1], hand.Pp_dip[2]);
 
     end = clock();
     double time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;

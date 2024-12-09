@@ -23,6 +23,7 @@ typedef struct {
     float k[2][3];
     float d[3][3];
     float Pp_dip[3];
+    float theta2;
 } DexterousHand;
 
 // Initialize the dexterous hand with parameters
@@ -32,9 +33,12 @@ void init_dexterous_hand(DexterousHand* hand,
                         float cy, float h,
                         float r1, float r2, float r3, float r4,
                         float u1, float u2, float u3, float u4,
-                        float beta1, float beta2, float beta3, float theta4);
+                        float beta1, float beta2, float beta3, float theta2, float theta4);
 
 // Update kinematics with new joint angles
 void update_kinematics(DexterousHand* hand, float q1, float q2, float q3);
+
+// Add this line after other function declarations
+void calculate_theta2(DexterousHand* hand);
 
 #endif

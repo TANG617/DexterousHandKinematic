@@ -37,7 +37,7 @@ void create_argument(DexterousHand* hand) {
 }
 
 void calculate_d12(DexterousHand* hand) {
-    hand->alpha = M_PI - hand->beta1 - hand->theta1;
+    hand->alpha = - hand->beta1 - hand->theta1; // C difference
     
     for(int i = 0; i < 3; i++) {
         for(int j = 0; j < 3; j++) {
@@ -64,7 +64,11 @@ void calculate_d3(DexterousHand* hand) {
                   hand->l4 * cos(hand->q1 - hand->alpha) - hand->cy;
     float P12_z = hand->h * cos(hand->q2) * sin(hand->q1) - 
                   hand->l4 * cos(hand->q2) * sin(hand->q1 - hand->alpha) + hand->p;
-    
+    printf("h:%f\n",hand->h);
+    printf("q2:%f\n",hand->q2);
+    printf("q1:%f\n",hand->q1);
+    printf("l4:%f\n",hand->l4);
+    printf("alpha:%f\n",hand->alpha);
     float A1 = P12_z;
     float B1 = P12_x * P12_x + P12_y * P12_y + P12_z * P12_z - hand->l3 * hand->l3;
     
@@ -73,7 +77,7 @@ void calculate_d3(DexterousHand* hand) {
     if (discriminant >= 0) {
         hand->d[2][2] = A1 - sqrt(discriminant);
     } else {
-        hand->d[2][2] = A1 - sqrt(-discriminant);  // 或其他适当的默认值
+        hand->d[2][2] = A1 - sqrt(-discriminant);  // 或其他���的默认值
     }
 }
 
@@ -83,7 +87,7 @@ void calculate_theta1(DexterousHand* hand) {
     float C2 = hand->r2 * hand->r2 - hand->r1 * hand->r1 - hand->r3 * hand->r3 - 
                hand->r4 * hand->r4 + 2 * hand->r3 * hand->r4 * cos(hand->theta3 - hand->theta4);
     
-    hand->theta1 = asin(C2 / sqrt(A2 * A2 + B2 * B2)) - atan2(B2, A2) + M_PI;
+    hand->theta1 = asin(C2 / sqrt(A2 * A2 + B2 * B2)) - atan2(B2, A2);
 }
 
 void calculate_gamma2(DexterousHand* hand) {
@@ -98,10 +102,68 @@ void calculate_gamma2(DexterousHand* hand) {
 }
 
 void calculate_dip_position(DexterousHand* hand) {
-    // Implementation of calculate_dip_position
-    // This is a complex calculation that requires matrix operations
-    // You may need to implement additional matrix operation functions
+    // Calculate DY and DZ
+    float DY = hand->u1 * cos(hand->gamma1);
+    float DZ = hand->u1 * sin(hand->gamma1);
+    float Ppip_dipSS[3] = {0, DY, DZ};
+    
+    printf("gamma1:%f\n",hand->gamma1);
+    // Calculate delta and rotation matrix r
+    float delta = - hand->theta3 + (hand->gamma1 - hand->beta3 + M_PI); // C difference
+    printf("delta:%f\n",delta);
+    float r[3][3] = {
+        {1, 0, 0},
+        {0, cos(delta), sin(delta)},  // 修正符号
+        {0, -sin(delta), cos(delta)}    // 修正符号
+    };
+    
+    // Calculate Ppip_dipS = r @ Ppip_dipSS
+    float Ppip_dipS[3] = {0};
+    for(int i = 0; i < 3; i++) {
+        for(int j = 0; j < 3; j++) {
+            Ppip_dipS[i] += r[i][j] * Ppip_dipSS[j];
+        }
+    }
+    printf("Ppip_dipSS:%f,%f,%f\n",Ppip_dipSS[0],Ppip_dipSS[1],Ppip_dipSS[2]);
+
+    printf("Ppip_dipS:%f,%f,%f\n",Ppip_dipS[0],Ppip_dipS[1],Ppip_dipS[2]);
+
+
+    
+    // Calculate CV and CW
+    float CV = hand->r1 * cos(hand->theta1) + 
+               hand->r2 * cos(hand->theta2) + 
+               hand->r3 * cos(hand->theta3);
+    float CW = hand->r1 * sin(hand->theta1) + 
+               hand->r2 * sin(hand->theta2) + 
+               hand->r3 * sin(hand->theta3);
+               
+
+    printf("theta1:%f\n",hand->theta1);
+    printf("theta2:%f\n",hand->theta2);
+    printf("theta3:%f\n",hand->theta3);
+    
+    // Calculate Pp_pipS
+    float Pp_pipS[3] = {0, CV + hand->h, CW};
+    
+    printf("Pp_pipS:%f,%f,%f\n",Pp_pipS[0],Pp_pipS[1],Pp_pipS[2]);
+    // Calculate Pp_dipS = Pp_pipS + Ppip_dipS
+    float Pp_dipS[3];
+    for(int i = 0; i < 3; i++) {
+        Pp_dipS[i] = Pp_pipS[i] + Ppip_dipS[i];
+    }
+    
+    printf("Pp_dipS:%f,%f,%f\n",Pp_dipS[0],Pp_dipS[1],Pp_dipS[2]);
+    // Calculate final position Pp_dip = R @ Pp_dipS + [0,0,p]
+    for(int i = 0; i < 3; i++) {
+        hand->Pp_dip[i] = 0;
+        for(int j = 0; j < 3; j++) {
+            hand->Pp_dip[i] += hand->R[i][j] * Pp_dipS[j];
+        }
+    }
+    hand->Pp_dip[2] += hand->p;
 }
+
 
 void init_dexterous_hand(DexterousHand* hand, 
                         float ax, float ay, float bx, float by, float p,
@@ -109,7 +171,7 @@ void init_dexterous_hand(DexterousHand* hand,
                         float cy, float h,
                         float r1, float r2, float r3, float r4,
                         float u1, float u2, float u3, float u4,
-                        float beta1, float beta2, float beta3, float theta4) {
+                        float beta1, float beta2, float beta3, float theta2, float theta4) {
     hand->ax = ax; hand->ay = ay;
     hand->bx = bx; hand->by = by;
     hand->p = p;
@@ -123,6 +185,7 @@ void init_dexterous_hand(DexterousHand* hand,
     hand->beta1 = beta1;
     hand->beta2 = beta2;
     hand->beta3 = beta3;
+    hand->theta2 = theta2;
     hand->theta4 = theta4;
 }
 
