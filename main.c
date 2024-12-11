@@ -22,13 +22,15 @@ int main() {
     float theta2 = 25.5/360.0 * 2*PI;
     float theta4 = 68.0/360.0 * 2*PI;
 
+    float theta3 = 121.8/360.0 * 2*PI;//q3
+
     DexterousHand hand;
     init_dexterous_hand(&hand, ax, ay, bx, by, p, l1, l2, l3, l4, cy, h,
                         r1, r2, r3, r4, u1, u2, u3, u4,
                         beta1, beta2, beta3, theta2, theta4);
 
 
-    update_kinematics(&hand,0.0f,0.0f,0.0f);
+    update_kinematics(&hand,0.0f,0.0f,theta3);
 
     // Plot points (you'll need to implement this based on your plotting library)
     // Print d1, d2, d3 values from last calculation

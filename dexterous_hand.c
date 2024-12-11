@@ -37,7 +37,7 @@ void create_argument(DexterousHand* hand) {
 }
 
 void calculate_d12(DexterousHand* hand) {
-    hand->alpha = - hand->beta1 - hand->theta1; // C difference
+    hand->alpha = M_PI - hand->beta1 - hand->theta1; 
     
     for(int i = 0; i < 3; i++) {
         for(int j = 0; j < 3; j++) {
@@ -64,11 +64,6 @@ void calculate_d3(DexterousHand* hand) {
                   hand->l4 * cos(hand->q1 - hand->alpha) - hand->cy;
     float P12_z = hand->h * cos(hand->q2) * sin(hand->q1) - 
                   hand->l4 * cos(hand->q2) * sin(hand->q1 - hand->alpha) + hand->p;
-    printf("h:%f\n",hand->h);
-    printf("q2:%f\n",hand->q2);
-    printf("q1:%f\n",hand->q1);
-    printf("l4:%f\n",hand->l4);
-    printf("alpha:%f\n",hand->alpha);
     float A1 = P12_z;
     float B1 = P12_x * P12_x + P12_y * P12_y + P12_z * P12_z - hand->l3 * hand->l3;
     
@@ -77,7 +72,7 @@ void calculate_d3(DexterousHand* hand) {
     if (discriminant >= 0) {
         hand->d[2][2] = A1 - sqrt(discriminant);
     } else {
-        hand->d[2][2] = A1 - sqrt(-discriminant);  // 或其他���的默认值
+        hand->d[2][2] = A1 - sqrt(-discriminant);
     }
 }
 
@@ -107,10 +102,8 @@ void calculate_dip_position(DexterousHand* hand) {
     float DZ = hand->u1 * sin(hand->gamma1);
     float Ppip_dipSS[3] = {0, DY, DZ};
     
-    printf("gamma1:%f\n",hand->gamma1);
     // Calculate delta and rotation matrix r
-    float delta = - hand->theta3 + (hand->gamma1 - hand->beta3 + M_PI); // C difference
-    printf("delta:%f\n",delta);
+    float delta = - hand->theta3 + hand->gamma1 - hand->beta3 + M_PI; 
     float r[3][3] = {
         {1, 0, 0},
         {0, cos(delta), sin(delta)},  // 修正符号
@@ -124,9 +117,6 @@ void calculate_dip_position(DexterousHand* hand) {
             Ppip_dipS[i] += r[i][j] * Ppip_dipSS[j];
         }
     }
-    printf("Ppip_dipSS:%f,%f,%f\n",Ppip_dipSS[0],Ppip_dipSS[1],Ppip_dipSS[2]);
-
-    printf("Ppip_dipS:%f,%f,%f\n",Ppip_dipS[0],Ppip_dipS[1],Ppip_dipS[2]);
 
 
     
