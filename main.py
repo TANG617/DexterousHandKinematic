@@ -4,45 +4,59 @@ import time
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+# 赋值
+ax, ay = 7.01, 14.46
+bx, by = 9.08, 13.2
+p = 15
+l1, l2 = 24.66, 24.66
+l3, l4 = 10.2, 12.79
+cy = 6.5
+h = by
+r1, r2, r3, r4 = 11.34, 26.10, 5.15, 30.59
+u1, u2, u3, u4 = 26.1, 6.08, 6, 27
+beta1 = 50.91 / 180 * math.pi
+beta2 = 47.84 / 180 * math.pi
+beta3 = 47.25 / 180 * math.pi
+theta4 = 56.2 / 180 * math.pi
 
-ax=10
-ay=20
-bx=10
-by=20
-p=65
-q1=0
-q2=0
-l1=20
-l2=20
-l3=30
-l4=15
-cy = 0
-h = 30
-alpha = 0
-
-r1 = 13
-r2 = 26
-r3 = 7
-r4 = 28.5
+# ax=10
+# ay=20
+# bx=10
+# by=20
+# p=65
+# q1=0
+# q2=0
+# l1=20
+# l2=20
+# l3=30
+# l4=15
+# cy = 0
+# h = 30
+# alpha = 0
 #
-theta1 = 135/360*math.pi*2
-theta2 = 25.5/360*math.pi*2
-theta3 = 121.8/360*math.pi*2
-theta4 = 68/360*math.pi*2
-
-u1 = 28
-u2 = 6.5
-u3 = 7
-u4 = 31
-
-gamma1 = 42/360*math.pi*2
-gamma2 = 275/360*math.pi*2
-gamma3 = 180/360*math.pi*2
-gamma4 = 23/360*math.pi*2
-
-beta1 = 45/360*math.pi*2
-beta2 = 43/360*math.pi*2
-beta3 = 50/360*math.pi*2
+# r1 = 13
+# r2 = 26
+# r3 = 7
+# r4 = 28.5
+# #
+# theta1 = 135/360*math.pi*2
+# theta2 = 25.5/360*math.pi*2
+# theta3 = 121.8/360*math.pi*2
+# theta4 = 68/360*math.pi*2
+#
+# u1 = 28
+# u2 = 6.5
+# u3 = 7
+# u4 = 31
+#
+# gamma1 = 42/360*math.pi*2
+# gamma2 = 275/360*math.pi*2
+# gamma3 = 180/360*math.pi*2
+# gamma4 = 23/360*math.pi*2
+#
+# beta1 = 45/360*math.pi*2
+# beta2 = 43/360*math.pi*2
+# beta3 = 50/360*math.pi*2
 
 class DexterousHandKinematics:
     def __init__(self, ax, ay, bx, by, p, l1, l2, l3, l4, cy, h, r1, r2, r3, r4, u1, u2, u3, u4, beta1, beta2, beta3, theta4):
@@ -84,7 +98,7 @@ class DexterousHandKinematics:
         
         self.calculate_d12()
         self.calculate_d3()
-        self.calculate_dip_position()
+        # self.calculate_dip_position()
 
     def create_rotation_matrix(self):
         self.R = torch.tensor([
@@ -136,68 +150,34 @@ class DexterousHandKinematics:
         self.gamma2 = math.asin(C3/math.sqrt(A3**2 + B3**2)) - math.atan(B3/A3) 
 
     
-    def calculate_dip_position(self):
-        DY = u1*math.cos(self.gamma1)
-        DZ = u1*math.sin(self.gamma1)
-        Ppip_dipSS = torch.tensor([0,DY,DZ],dtype=torch.float32)
-        delta =  (self.gamma1 - self.beta3 + math.pi - self.theta3)
-        self.r = torch.tensor([
-            [1,0,0],
-            [0,math.cos(delta),math.sin(delta)],
-            [0,-math.sin(delta),math.cos(delta)]
-        ], dtype=torch.float32)
-        Ppip_dipS = self.r @ Ppip_dipSS
-
-        CV = r1*math.cos(self.theta1) + r2*math.cos(theta2) + r3*math.cos(self.theta3)
-        CW = r1*math.sin(self.theta1) + r2*math.sin(theta2) + r3*math.sin(self.theta3)
-        Pp_pipS = torch.tensor([0,CV,CW],dtype=torch.float32) + torch.tensor([0,h,0],dtype=torch.float32);
-        Pp_dipS = Pp_pipS + Ppip_dipS
-
-        self.Pp_dip = self.R @ Pp_dipS + torch.tensor([[0,0,self.p]],dtype=torch.float32)
+    # def calculate_dip_position(self):
+    #     DY = u1*math.cos(self.gamma1)
+    #     DZ = u1*math.sin(self.gamma1)
+    #     Ppip_dipSS = torch.tensor([0,DY,DZ],dtype=torch.float32)
+    #     delta =  (self.gamma1 - self.beta3 + math.pi - self.theta3)
+    #     self.r = torch.tensor([
+    #         [1,0,0],
+    #         [0,math.cos(delta),math.sin(delta)],
+    #         [0,-math.sin(delta),math.cos(delta)]
+    #     ], dtype=torch.float32)
+    #     Ppip_dipS = self.r @ Ppip_dipSS
+    #
+    #     CV = r1*math.cos(self.theta1) + r2*math.cos(theta2) + r3*math.cos(self.theta3)
+    #     CW = r1*math.sin(self.theta1) + r2*math.sin(theta2) + r3*math.sin(self.theta3)
+    #     Pp_pipS = torch.tensor([0,CV,CW],dtype=torch.float32) + torch.tensor([0,h,0],dtype=torch.float32);
+    #     Pp_dipS = Pp_pipS + Ppip_dipS
+    #
+    #     self.Pp_dip = self.R @ Pp_dipS + torch.tensor([[0,0,self.p]],dtype=torch.float32)
 
 
 if __name__ == "__main__":
     start_time = time.time()
 
     dhk = DexterousHandKinematics(ax,ay,bx,by,p,l1,l2,l3,l4,cy,h,r1,r2,r3,r4,u1,u2,u3,u4,beta1,beta2,beta3,theta4)
-    
-
-# 创建存储点坐标的列表
-    # x_points = []
-    # y_points = []
-    # z_points = []
-
-    # for i in range(44):
-    #     for j in range(15):
-    #         for k in range(80):
-    #             dhk.update_kinematics(1/180*math.pi*i, 1/180*math.pi*j, 1/180*math.pi*k)
-    #             # 将点坐标添加到列表中
-    #             x_points.append(dhk.Pp_dip[0][0].item())
-    #             y_points.append(dhk.Pp_dip[0][1].item())
-    #             z_points.append(dhk.Pp_dip[0][2].item())
 
 
-    # # 创建3D图
-    # fig = plt.figure(figsize=(10, 10))
-    # ax = fig.add_subplot(111, projection='3d')
-    
-    # 绘制散点图
-    # ax.scatter(x_points, y_points, z_points, c='b', marker='o', s=1)
-    
-    # 设置坐标轴标签
-    # ax.set_xlabel('X')
-    # ax.set_ylabel('Y')
-    # ax.set_zlabel('Z')
-    
-    # 设置标题
-    # plt.title('Dexterous Hand End-Point Positions')
-    
-    # 显示图形
-    # plt.show()
-
-    dhk.update_kinematics(0, 0, q3=theta3)
+    dhk.update_kinematics(31.66/180*math.pi, 0, 0)
     print(dhk.d)
-    print(dhk.Pp_dip)
 
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
