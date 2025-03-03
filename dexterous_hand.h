@@ -33,7 +33,7 @@ void init_dexterous_hand(DexterousHand* hand,
                         float cy, float h,
                         float r1, float r2, float r3, float r4,
                         float u1, float u2, float u3, float u4,
-                        float beta1, float beta2, float beta3, float theta2, float theta4);
+                        float beta1, float beta2, float beta3, float theta4);
 
 // Update kinematics with new joint angles
 void update_kinematics(DexterousHand* hand, float q1, float q2, float q3);
