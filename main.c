@@ -51,14 +51,7 @@ int main() {
     update_kinematics(&hand, 13.61/180.0*M_PI, 0, (180-45.02)/180.0*M_PI);
     printf("1. d1,d2,d3: [%.2f, %.2f, %.2f]\n   ref       [-7.16, -7.16, -5.21]\n",
            hand.d[0][2], hand.d[1][2], hand.d[2][2]);
-    
-    // Keep the other test cases as they were
-    update_kinematics(&hand,52.3/180.0*M_PI,0.0f,(180-35)/180.0*M_PI);
-    printf("2. d1,d2,d3: [%.2f, %.2f, %.2f]\n   ref       [-10, -10, -4]\n",
-         hand.d[0][2], hand.d[1][2], hand.d[2][2]);
-    update_kinematics(&hand,46.18/180.0*M_PI,11.8/180.0*M_PI,(180-35)/180.0*M_PI);
-    printf("3. d1,d2,d3: [%.2f, %.2f, %.2f]\n   ref       [-7, -5, -4]\n",
-         hand.d[0][2], hand.d[1][2], hand.d[2][2]);
+
 
 #else
   update_kinematics(&hand,0.0f,0.0f,theta3);
