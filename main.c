@@ -47,21 +47,18 @@ int main() {
                         r1, r2, r3, r4, u1, u2, u3, u4,
                         beta1, beta2, beta3, theta4);
 
-
+#ifndef ORG
     update_kinematics(&hand,31.66/180.0*M_PI,0,0);
-    printf("1. d1,d2,d3: [%.2f, %.2f, %.2f]\n",
+    printf("1. d1,d2,d3: [%.2f, %.2f, %.2f]\n   ref       [-5, -5, 0]\n",
            hand.d[0][2], hand.d[1][2], hand.d[2][2]);
-
-
   update_kinematics(&hand,52.3/180.0*M_PI,0.0f,(180-35)/180.0*M_PI);
-  printf("2. d1,d2,d3: [%.2f, %.2f, %.2f]\n",
+  printf("2. d1,d2,d3: [%.2f, %.2f, %.2f]\n   ref       [-10, -10, -4]\n",
          hand.d[0][2], hand.d[1][2], hand.d[2][2]);
-
   update_kinematics(&hand,46.18/180.0*M_PI,11.8/180.0*M_PI,(180-35)/180.0*M_PI);
-  printf("3. d1,d2,d3: [%.2f, %.2f, %.2f]\n",
+  printf("3. d1,d2,d3: [%.2f, %.2f, %.2f]\n   ref       [-7, -5, -4]\n",
          hand.d[0][2], hand.d[1][2], hand.d[2][2]);
 
-#ifdef ORG
+#else
   update_kinematics(&hand,0.0f,0.0f,theta3);
   printf("ORG. d1,d2,d3: [%.2f, %.2f, %.2f]\n",
          hand.d[0][2], hand.d[1][2], hand.d[2][2]);

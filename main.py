@@ -5,13 +5,13 @@ import time
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 # 赋值
-ax, ay = 7.01, 14.46
-bx, by = 9.08, 13.2
-p = 15
-l1, l2 = 24.66, 24.66
-l3, l4 = 10.2, 12.79
-cy = 6.5
-h = by
+ax, ay = 7, 12
+bx, by = (18.15-2.5)/2, 14.14 # bx = bu; by = bv
+p = 15.31
+l1, l2 = 24.19, 24.19
+l3, l4 = 10.2, 13.07
+cy = 0
+h = by #TODO
 r1, r2, r3, r4 = 11.34, 26.10, 5.15, 30.59
 u1, u2, u3, u4 = 26.1, 6.08, 6, 27
 beta1 = 50.91 / 180 * math.pi
