@@ -25,20 +25,19 @@ int main() {
     // d1,d2,d3 = 45,45,39.17
     // float theta2 = 25.5/360.0 * 2*PI;
 #else
-    double ax = 7.01, ay = 14.46;//
-    double bx = 9.08, by = 13.2;//
-    double p = 15;//
-    double l1 = 24.66, l2 = 24.66;//
-    double l3 = 10.2, l4 = 12.79;//l3 may be 13.2?
-    double cy = 6.5;
-    double h = by;//h
-       // double h = sqrt(by*by + p*p);
-    double r1 = 11.34, r2 = 26.10, r3 = 5.15, r4 = 30.59;
+    // Updated values from main.py
+    double ax = 7, ay = 12;
+    double bx = (18.15-2.5)/2, by = 14.14; // bx = bu; by = bv
+    double p = 14.48;
+    double l1 = 24.19, l2 = 24.19;
+    double l3 = 13.75, l4 = 13.07;
+    double cy = 0;
+    double h = by; // TODO
+    double r1 = 10.3, r2 = 26.10, r3 = 5.15, r4 = 30.59;
     double u1 = 26.1, u2 = 6.08, u3 = 6, u4 = 27;
-
-    double beta1 = 50.91 / 180 * M_PI;
+    double beta1 = 52.61 / 180 * M_PI;
     double beta2 = 47.84 / 180 * M_PI;
-    double beta3 = 47.25 / 180 * M_PI;
+    double beta3 = 60.95 / 180 * M_PI;
     double theta4 = 56.2 / 180 * M_PI;
 #endif
 
@@ -48,14 +47,17 @@ int main() {
                         beta1, beta2, beta3, theta4);
 
 #ifndef ORG
-    update_kinematics(&hand,31.66/180.0*M_PI,0,0);
-    printf("1. d1,d2,d3: [%.2f, %.2f, %.2f]\n   ref       [-5, -5, 0]\n",
+    // Updated values from main.py test case
+    update_kinematics(&hand, 13.61/180.0*M_PI, 0, (180-45.02)/180.0*M_PI);
+    printf("1. d1,d2,d3: [%.2f, %.2f, %.2f]\n   ref       [-7.16, -7.16, -5.21]\n",
            hand.d[0][2], hand.d[1][2], hand.d[2][2]);
-  update_kinematics(&hand,52.3/180.0*M_PI,0.0f,(180-35)/180.0*M_PI);
-  printf("2. d1,d2,d3: [%.2f, %.2f, %.2f]\n   ref       [-10, -10, -4]\n",
+    
+    // Keep the other test cases as they were
+    update_kinematics(&hand,52.3/180.0*M_PI,0.0f,(180-35)/180.0*M_PI);
+    printf("2. d1,d2,d3: [%.2f, %.2f, %.2f]\n   ref       [-10, -10, -4]\n",
          hand.d[0][2], hand.d[1][2], hand.d[2][2]);
-  update_kinematics(&hand,46.18/180.0*M_PI,11.8/180.0*M_PI,(180-35)/180.0*M_PI);
-  printf("3. d1,d2,d3: [%.2f, %.2f, %.2f]\n   ref       [-7, -5, -4]\n",
+    update_kinematics(&hand,46.18/180.0*M_PI,11.8/180.0*M_PI,(180-35)/180.0*M_PI);
+    printf("3. d1,d2,d3: [%.2f, %.2f, %.2f]\n   ref       [-7, -5, -4]\n",
          hand.d[0][2], hand.d[1][2], hand.d[2][2]);
 
 #else

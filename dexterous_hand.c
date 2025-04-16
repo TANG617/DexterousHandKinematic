@@ -85,16 +85,16 @@ void calculate_theta1(DexterousHand* hand) {
     hand->theta1 = asin(C2 / sqrt(A2 * A2 + B2 * B2)) - atan2(B2, A2);
 }
 
-void calculate_gamma2(DexterousHand* hand) {
-    hand->gamma1 = hand->theta3 - hand->beta2 + hand->beta3;//omit -1/2MPI
-    
-    float A3 = 2 * hand->u1 * hand->u2 * sin(hand->gamma1);
-    float B3 = 2 * hand->u1 * hand->u2 * cos(hand->gamma1) + 2 * hand->u2 * hand->u3;
-    float C3 = hand->u4 * hand->u4 - hand->u1 * hand->u1 - hand->u2 * hand->u2 - 
-               hand->u3 * hand->u3 - 2 * hand->u1 * hand->u3 * cos(hand->gamma1);
-    
-    hand->gamma2 = asin(C3 / sqrt(A3 * A3 + B3 * B3)) - atan2(B3, A3);
-}
+//void calculate_gamma2(DexterousHand* hand) {
+//    hand->gamma1 = hand->theta3 - hand->beta2 + hand->beta3;//omit -1/2MPI
+//
+//    float A3 = 2 * hand->u1 * hand->u2 * sin(hand->gamma1);
+//    float B3 = 2 * hand->u1 * hand->u2 * cos(hand->gamma1) + 2 * hand->u2 * hand->u3;
+//    float C3 = hand->u4 * hand->u4 - hand->u1 * hand->u1 - hand->u2 * hand->u2 -
+//               hand->u3 * hand->u3 - 2 * hand->u1 * hand->u3 * cos(hand->gamma1);
+//
+//    hand->gamma2 = asin(C3 / sqrt(A3 * A3 + B3 * B3)) - atan2(B3, A3);
+//}
 
 // void calculate_dip_position(DexterousHand* hand) {
 //     // Calculate DY and DZ
@@ -185,7 +185,6 @@ void update_kinematics(DexterousHand* hand, float q1, float q2, float q3) {
     
     create_rotation_matrix(hand);
     create_argument(hand);
-    calculate_gamma2(hand);
     calculate_theta1(hand);
     calculate_d12(hand);
     calculate_d3(hand);
