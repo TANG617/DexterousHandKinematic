@@ -7,16 +7,17 @@ from mpl_toolkits.mplot3d import Axes3D
 # 赋值
 ax, ay = 7, 12
 bx, by = (18.15-2.5)/2, 14.14 # bx = bu; by = bv
-p = 15.31
+p = 14.48
 l1, l2 = 24.19, 24.19
 l3, l4 = 10.2, 13.07
 cy = 0
 h = by #TODO
 r1, r2, r3, r4 = 10.3, 26.10, 5.15, 30.59
 u1, u2, u3, u4 = 26.1, 6.08, 6, 27
-beta1 = 50.91 / 180 * math.pi
+beta1 = 52.61 / 180 * math.pi
 beta2 = 47.84 / 180 * math.pi
-beta3 = 47.25 / 180 * math.pi
+beta3 = 60.95 / 180 * math.pi
+
 theta4 = 56.2 / 180 * math.pi
 
 # ax=10
@@ -93,7 +94,7 @@ class DexterousHandKinematics:
         self.create_rotation_matrix()
         self.create_argument()
         
-        self.calculate_gamma2()
+        # self.calculate_gamma2()
         self.calculate_theta1() 
         
         self.calculate_d12()
@@ -106,6 +107,7 @@ class DexterousHandKinematics:
             [0,                 math.cos(self.q1),                  -math.sin(self.q1)],
             [-math.sin(self.q2),     math.cos(self.q2)*math.sin(self.q1),    math.cos(self.q2)*math.cos(self.q1)]
         ], dtype=torch.float32)
+        print("R:", self.R)
 
     def create_argument(self):
 
@@ -117,21 +119,20 @@ class DexterousHandKinematics:
 
     def calculate_d12(self):
         self.alpha = math.pi - self.beta1 - self.theta1
-        self.d = torch.zeros(3,3,dtype=torch.float32)
+        print("alpha:",self.alpha/math.pi*180)
         k_norm_squared = torch.sqrt(torch.sum(self.k**2, dim=1))
+
+        self.d = torch.zeros(3,3,dtype=torch.float32)
         self.d[0][2] = self.k[0][2] - torch.sqrt(self.l1**2 + self.k[0][2]**2 - k_norm_squared[0]**2)
         self.d[1][2] = self.k[1][2] - torch.sqrt(self.l1**2 + self.k[1][2]**2 - k_norm_squared[1]**2)
 
     def calculate_d3(self):
         P12_x = torch.tensor(self.h*math.sin(self.q2)*math.sin(self.q1) - self.l4*math.sin(self.q2)*math.sin(self.q1-self.alpha))
-        print("h:",self.h)
-        print("q2:",self.q2)
-        print("q1:",self.q1)
-        print("l4:",self.l4)
-        print("alpha:",self.alpha)
         P12_y = torch.tensor(self.h*math.cos(self.q1) - self.l4*math.cos(self.q1-self.alpha) - self.cy)
         P12_z = torch.tensor(self.h*math.cos(self.q2)*math.sin(self.q1) - self.l4*math.cos(self.q2)*math.sin(self.q1 - self.alpha) + self.p)
         A1 = P12_z
+
+
         B1 = P12_x**2 + P12_y**2 + P12_z**2 - self.l3**2
         self.d[2][2] = A1 - torch.sqrt(A1**2 - B1)
 
@@ -139,15 +140,18 @@ class DexterousHandKinematics:
         A2 = 2*self.r1*(self.r3*math.sin(self.theta3) - self.r4 * math.sin(self.theta4))
         B2 = 2*self.r1*(self.r3*math.cos(self.theta3) - self.r4 * math.cos(self.theta4))
         C2 = self.r2**2 - self.r1**2-self.r3**2 -self.r4**2 + 2*self.r3*self.r4*math.cos(self.theta3-self.theta4)
-        self.theta1 = math.asin(C2/math.sqrt(A2**2 + B2**2)) - math.atan(B2/A2) + math.pi 
+        # self.theta1 = math.pi /4 - (math.asin(C2/math.sqrt(A2**2 + B2**2)) - math.atan(B2/A2))
+        self.theta1 = math.asin(C2 / math.sqrt(A2 ** 2 + B2 ** 2)) - math.atan(B2 / A2)
+        self.theta1 = (180 - 73.75)/180*math.pi
+        print("theta1:",self.theta1/math.pi*180)
         #unkown why there is a pi bias, but it works
 
-    def calculate_gamma2(self):
-        self.gamma1 = self.theta3 - self.beta2 + self.beta3 - math.pi/2
-        A3 = 2*self.u1*self.u2*math.sin(self.gamma1)
-        B3 = 2*self.u1*self.u2*math.cos(self.gamma1) + 2*self.u2*self.u3
-        C3 = self.u4**2 - self.u1**2 - self.u2**2 - self.u3**2 - 2*self.u1*self.u3*math.cos(self.gamma1)
-        self.gamma2 = math.asin(C3/math.sqrt(A3**2 + B3**2)) - math.atan(B3/A3) 
+    # def calculate_gamma2(self):
+    #     self.gamma1 = self.theta3 - self.beta2 + self.beta3 - math.pi/2
+    #     A3 = 2*self.u1*self.u2*math.sin(self.gamma1)
+    #     B3 = 2*self.u1*self.u2*math.cos(self.gamma1) + 2*self.u2*self.u3
+    #     C3 = self.u4**2 - self.u1**2 - self.u2**2 - self.u3**2 - 2*self.u1*self.u3*math.cos(self.gamma1)
+    #     self.gamma2 = math.asin(C3/math.sqrt(A3**2 + B3**2)) - math.atan(B3/A3)
 
     
     # def calculate_dip_position(self):
@@ -176,7 +180,7 @@ if __name__ == "__main__":
     dhk = DexterousHandKinematics(ax,ay,bx,by,p,l1,l2,l3,l4,cy,h,r1,r2,r3,r4,u1,u2,u3,u4,beta1,beta2,beta3,theta4)
 
 
-    dhk.update_kinematics(31.66/180*math.pi, 0, 0)
+    dhk.update_kinematics(13.61/180*math.pi, 0, 45.02/180*math.pi)
     print(dhk.d)
 
     end_time = time.time()
@@ -184,5 +188,5 @@ if __name__ == "__main__":
 
         #Time consumption: 21.78ms(the first run)
 
-
-    
+    # 43.03/180*math.pi , 0 , 45.1/180*math.pi => 0,0,0
+    # 13.61/180*math.pi, 0, 45.02/180*math.pi               => -7.16,-7.16, -5.21
