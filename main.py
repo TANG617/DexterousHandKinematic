@@ -9,7 +9,7 @@ ax, ay = 7, 12
 bx, by = (18.15-2.5)/2, 14.14 # bx = bu; by = bv
 p = 14.48
 l1, l2 = 24.19, 24.19
-l3, l4 = 10.2, 13.07
+l3, l4 = 13.75, 13.07
 cy = 0
 h = by #TODO
 r1, r2, r3, r4 = 10.3, 26.10, 5.15, 30.59
@@ -139,13 +139,17 @@ class DexterousHandKinematics:
         P12_x = torch.tensor(self.h*math.sin(self.q2)*math.sin(self.q1) - self.l4*math.sin(self.q2)*math.sin(self.q1-self.alpha))
         P12_y = torch.tensor(self.h*math.cos(self.q1) - self.l4*math.cos(self.q1-self.alpha) - self.cy)
         P12_z = torch.tensor(self.h*math.cos(self.q2)*math.sin(self.q1) - self.l4*math.cos(self.q2)*math.sin(self.q1 - self.alpha) + self.p)
+        # P12_z = 5
         A1 = P12_z
 
+        print("P12_x:",P12_x)
+        print("P12_y:",P12_y)
+        print("P12_z:",P12_z)
 
+        # l4 cy p
+        print("A1^2:",A1**2)
         B1 = P12_x**2 + P12_y**2 + P12_z**2 - self.l3**2
-
-        print("A1:",A1)
-        print("torch.sqrt(A1**2 - B1)",torch.sqrt(A1**2 - B1))
+        print("B1:", B1)
         self.d[2][2] = A1 - torch.sqrt(A1**2 - B1)
 
 
