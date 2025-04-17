@@ -188,6 +188,6 @@ void update_kinematics(DexterousHand* hand, float q1, float q2, float q3) {
     calculate_theta1(hand);
     calculate_d12(hand);
     calculate_d3(hand);
-    calculate_gamma2(hand)
+    calculate_gamma2(hand);
     calculate_dip_position(hand);
 }
