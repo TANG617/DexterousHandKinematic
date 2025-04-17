@@ -85,21 +85,7 @@ class DexterousHandKinematics:
         self.u4 = u4
         self.theta4 = theta4
 
-    def update_kinematics(self,q1,q2,q3):
 
-        self.q1 = q1
-        self.q2 = q2
-        self.theta3 = q3
-        
-        self.create_rotation_matrix()
-        self.create_argument()
-        
-        # self.calculate_gamma2()
-        self.calculate_theta1() 
-        
-        self.calculate_d12()
-        self.calculate_d3()
-        # self.calculate_dip_position()
 
     def create_rotation_matrix(self):
         self.R = torch.tensor([
@@ -154,32 +140,55 @@ class DexterousHandKinematics:
 
 
 
-    # def calculate_gamma2(self):
-    #     self.gamma1 = self.theta3 - self.beta2 + self.beta3 - math.pi/2
-    #     A3 = 2*self.u1*self.u2*math.sin(self.gamma1)
-    #     B3 = 2*self.u1*self.u2*math.cos(self.gamma1) + 2*self.u2*self.u3
-    #     C3 = self.u4**2 - self.u1**2 - self.u2**2 - self.u3**2 - 2*self.u1*self.u3*math.cos(self.gamma1)
-    #     self.gamma2 = math.asin(C3/math.sqrt(A3**2 + B3**2)) - math.atan(B3/A3)
+    def calculate_gamma2(self):
+        self.gamma1 = self.theta3 - self.beta2 + self.beta3 - math.pi/2
+        A3 = 2*self.u1*self.u2*math.sin(self.gamma1)
+        B3 = 2*self.u1*self.u2*math.cos(self.gamma1) + 2*self.u2*self.u3
+        C3 = self.u4**2 - self.u1**2 - self.u2**2 - self.u3**2 - 2*self.u1*self.u3*math.cos(self.gamma1)
+        self.gamma2 = math.asin(C3/math.sqrt(A3**2 + B3**2)) - math.atan(B3/A3)
+
+
+    def calculate_theta2(self):
+        self.theta2 =  math.acos((self.r4 * math.cos(self.theta4) - self.r3 * math.cos(self.theta3) - self.r1 * math.cos(self.theta1))/self.r2)
 
     
-    # def calculate_dip_position(self):
-    #     DY = u1*math.cos(self.gamma1)
-    #     DZ = u1*math.sin(self.gamma1)
-    #     Ppip_dipSS = torch.tensor([0,DY,DZ],dtype=torch.float32)
-    #     delta =  (self.gamma1 - self.beta3 + math.pi - self.theta3)
-    #     self.r = torch.tensor([
-    #         [1,0,0],
-    #         [0,math.cos(delta),math.sin(delta)],
-    #         [0,-math.sin(delta),math.cos(delta)]
-    #     ], dtype=torch.float32)
-    #     Ppip_dipS = self.r @ Ppip_dipSS
-    #
-    #     CV = r1*math.cos(self.theta1) + r2*math.cos(theta2) + r3*math.cos(self.theta3)
-    #     CW = r1*math.sin(self.theta1) + r2*math.sin(theta2) + r3*math.sin(self.theta3)
-    #     Pp_pipS = torch.tensor([0,CV,CW],dtype=torch.float32) + torch.tensor([0,h,0],dtype=torch.float32);
-    #     Pp_dipS = Pp_pipS + Ppip_dipS
-    #
-    #     self.Pp_dip = self.R @ Pp_dipS + torch.tensor([[0,0,self.p]],dtype=torch.float32)
+    def calculate_dip_position(self):
+        DY = u1*math.cos(self.gamma1)
+        DZ = u1*math.sin(self.gamma1)
+        Ppip_dipSS = torch.tensor([0,DY,DZ],dtype=torch.float32)
+        delta =  (self.gamma1 - self.beta3 + math.pi - self.theta3)
+        self.r = torch.tensor([
+            [1,0,0],
+            [0,math.cos(delta),math.sin(delta)],
+            [0,-math.sin(delta),math.cos(delta)]
+        ], dtype=torch.float32)
+        Ppip_dipS = self.r @ Ppip_dipSS
+
+
+
+        CV = r1*math.cos(self.theta1) + r2*math.cos(self.theta2) + r3*math.cos(self.theta3)
+        CW = r1*math.sin(self.theta1) + r2*math.sin(self.theta2) + r3*math.sin(self.theta3)
+        Pp_pipS = torch.tensor([0,CV,CW],dtype=torch.float32) + torch.tensor([0,h,0],dtype=torch.float32);
+        Pp_dipS = Pp_pipS + Ppip_dipS
+
+        self.Pp_dip = self.R @ Pp_dipS + torch.tensor([[0,0,self.p]],dtype=torch.float32)
+
+    def update_kinematics(self, q1, q2, q3):
+        self.q1 = q1
+        self.q2 = q2
+        self.theta3 = q3
+
+        self.create_rotation_matrix()
+        self.create_argument()
+
+
+        self.calculate_theta1()
+        self.calculate_theta2()
+        self.calculate_gamma2()
+
+        self.calculate_d12()
+        self.calculate_d3()
+        self.calculate_dip_position()
 
 
 if __name__ == "__main__":
